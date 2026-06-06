@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Lucky Gift!</title>
+    <style>
+        /* CUSTOMIZE YOUR LOOK HERE */
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            text-align: center; 
+            background: #1a1a1a; /* Dark sleek background */
+            color: #fff;
+            padding: 50px 20px; 
+            /* Prevents pull-to-refresh gesture on chrome/safari mobile */
+            overscroll-behavior-y: contain; 
+        }
+        /* Header Layout Styles */
+        .brand-header {
+            margin-bottom: 30px;
+        }
+        .main-title {
+            font-size: 3rem;
+            margin: 0;
+            color: #ff4757;
+            text-transform: uppercase;
+            letter-spacing: 6px;
+            font-weight: 900;
+            text-shadow: 0 0 15px rgba(255, 71, 87, 0.3);
+        }
+        .sub-title {
+            font-size: 1.2rem;
+            margin: 5px 0 0 0;
+            color: #a4b0be;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        /* Card Styles */
+        .card { 
+            background: #2a2a2a; 
+            padding: 40px; 
+            border-radius: 20px; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5); 
+            display: inline-block; 
+            max-width: 500px;
+            width: 100%;
+            border: 3px solid #ff5957; /* Accent border color */
+            box-sizing: border-box;
+        }
+        h1 { font-size: 1.8rem; margin-bottom: 10px; color: #f1f2f6; }
+        .price { 
+            font-size: clamp(1.8rem, 7vw, 2.8rem); /* Adjusted font size dynamically to fit longer item names */
+            color: #ff4757; /* Price text color */
+            font-weight: bold; 
+            margin: 30px 0;
+            text-shadow: 0 0 10px rgba(255, 71, 87, 0.5);
+            word-wrap: break-word;
+            text-transform: uppercase;
+        }
+        .subtext { color: #a4b0be; font-size: 0.9rem; margin-bottom: 15px; }
+        
+        /* Thank You Message Style */
+        .thank-you-msg {
+            font-size: 1.1rem;
+            color: #2ed573; /* Smooth green color */
+            font-weight: 600;
+            margin-top: 15px;
+            border-top: 1px solid #444;
+            padding-top: 15px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="brand-header">
+        <h1 class="main-title">GLAMOUR</h1>
+        <p class="sub-title">Exclusive Rewards Portal</p>
+    </div>
+
+    <div class="card">
+        <h1>🎉CONGRATULATIONS🎉</h1>
+        <div class="price" id="price-tag">Scanning...</div>
+        <div class="subtext" id="subtext-hint">Warning: Refreshing will lose this offer!</div>
+        
+        <div class="thank-you-msg" id="thank-you">Thank you for being a valued customer!</div>
+    </div>
+
+    <script>
+        // --- CUSTOMIZE YOUR GIFTS & PRIORITY HERE ---
+        // Change the 'weight' numbers below to adjust the winning probabilities.
+        // Currently configured to sum up to 122 (percentage chance).
+        const giftPool = [
+            { prize: "MAGIC LED BULB", weight: 30 }, // 30% Chance
+            { prize: "WATER BOTTLE",   weight: 25 }, // 25% Chance
+            { prize: "COFFEE MUG",    weight:  15 }, // 15% Chance
+            { prize: "TRAY",          weight:   8 }, // 8% Chance
+            { prize: "LADIES BAG",     weight: 15 }, // 15% Chance
+            { prize: "UMBRELLA",       weight: 10 }, // 10% Chance
+            { prize: "GENTS BAG",      weight: 8  }, //  8% Chance
+            { prize: "WALL CLOCK",     weight: 6  }, //  6% Chance
+            { prize: "WRIST WATCH",    weight: 5  }, //  5% Chance
+            { prize: "FAN",            weight: 0  }  //  0% Chance (Grand Prize rarity)
+        ];
+
+        // --- THE ENGINE ---
+        function getWeightedGift(pool) {
+            const totalWeight = pool.reduce((sum, gift) => sum + gift.weight, 0);
+            let randomNum = Math.random() * totalWeight;
+            
+            for (const gift of pool) {
+                if (randomNum < gift.weight) {
+                    return gift.prize;
+                }
+                randomNum -= gift.weight;
+            }
+            return pool[0].prize; // Fallback
+        }
+
+        // --- GENERATE REWARD ON LOAD ---
+        window.addEventListener('DOMContentLoaded', () => {
+            const priceTag = document.getElementById("price-tag");
+            const thankYouBox = document.getElementById("thank-you");
+            
+            // Generate a temporary live prize
+            const dynamicPrize = getWeightedGift(giftPool);
+            priceTag.textContent = dynamicPrize;
+            thankYouBox.textContent = "Thank you for being a valued customer! Enjoy your gift.";
+        });
+
+        // --- ANTI-REFRESH ENGINE (PC & MOBILE) ---
+        window.addEventListener('beforeunload', (event) => {
+            event.preventDefault();
+            event.returnValue = ''; // Standard trigger for modern browsers
+        });
+
+        // Stop F5, Ctrl+R, and Command+R keys on PC keyboards safely
+        window.addEventListener('keydown', (event) => {
+            const isRKey = event.key.toLowerCase() === 'r' || event.code === 'KeyR';
+            if (
+                event.key === 'F5' || 
+                (event.ctrlKey && isRKey) || 
+                (event.metaKey && isRKey)
+            ) {
+                event.preventDefault();
+                alert("Refresh is blocked! Please claim your prize or close the tab.");
+            }
+        });
+    </script>
+
+</body>
+</html>
